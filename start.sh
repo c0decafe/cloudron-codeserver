@@ -9,6 +9,7 @@ ENV="/app/data/env"
 if [[ ! -f $ENV  ]]; then
      $GSU cat > $ENV <<EOF
 CS_DISABLE_GETTING_STARTED_OVERRIDE=false
+FOLDER=/app/data/workspace
 EOF
 fi
 
@@ -16,8 +17,11 @@ source $ENV
 
 export XDG_DATA_HOME=/app/data/.local/share
 export XDG_STATE_HOME=/app/data/.local/state
-export XDG_RUNTIME_DIR=/run
 export XDG_CACHE_HOME=/run/.cache
+
+if [ -n "$FOLDER" ]; then
+     mkdir -p $FOLDER
+fi
 
 echo "==> Ensure permissions"
 chown -R $OWN /run/.cache /app/data
@@ -34,4 +38,4 @@ if [[ -d /app/data/.vscode/logs  ]]; then
 fi
 
 echo "==> Starting code-server"
-exec $GSU code-server
+exec $GSU code-server $FOLDER

@@ -12,8 +12,7 @@ COPY config.yaml ${HOME}/.config/code-server/config.yaml
 COPY start.sh /app/pkg/start.sh
 
 RUN ln -s /run/.cache/ ${HOME}/.cache \
-    && mkdir ${HOME}/workspace \
-    && ln -s /app/data/workspace/ ${HOME}/workspace \
+    && ln -s /app/data/ ${HOME}/data \
     && chown -R ${USER}:${USER} ${HOME}
 
 CMD [ "/app/pkg/start.sh" ]
