@@ -19,6 +19,8 @@ export XDG_DATA_HOME=/app/data/.local/share
 export XDG_STATE_HOME=/app/data/.local/state
 export XDG_CACHE_HOME=/run/.cache
 
+export DOCKER_HOST=$CLOUDRON_DOCKER_HOST
+
 if [ -n "$FOLDER" ]; then
      mkdir -p $FOLDER
 fi
@@ -28,7 +30,7 @@ chown -R $OWN /run/.cache /app/data
 
 if [[ ! -f /app/data/.initialized  ]]; then
      echo "Fresh installation, init"
-     $GSU code-server --install-extension Gitlab.gitlab-workflow
+     $GSU code-server --install-extension ms-azuretools.vscode-docker
      touch /app/data/.initialized
 fi
 

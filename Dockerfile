@@ -6,6 +6,7 @@ ARG URL=https://github.com/coder/code-server/releases/download/v${VERSION}/${DEB
 ARG USER=cloudron
 ARG HOME=/home/${USER}
 
+RUN apt update && apt install -y docker.io
 RUN curl -L -O ${URL} && apt install ./${DEB} && rm ${DEB}
 
 COPY config.yaml ${HOME}/.config/code-server/config.yaml

@@ -11,6 +11,7 @@
   "httpPort": 8000,
   "memoryLimit": 1000000000,
   "addons": {
+    "docker": {},
     "localstorage": {},
     "proxyAuth": {
     }
