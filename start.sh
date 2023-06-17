@@ -9,7 +9,7 @@ ENV="/app/data/env"
 if [[ ! -f $ENV  ]]; then
      $GSU cat > $ENV <<EOF
 CS_DISABLE_GETTING_STARTED_OVERRIDE=false
-FOLDER=/app/data/workspace
+FOLDER=/app/data/workspaces
 EOF
 fi
 
