@@ -5,38 +5,52 @@ set -eu
 OWN="cloudron:cloudron"
 GSU="/usr/local/bin/gosu $OWN"
 ENV="/app/data/env"
+HOME="/run/home"
 
 if [[ ! -f $ENV  ]]; then
      $GSU cat > $ENV <<EOF
 CS_DISABLE_GETTING_STARTED_OVERRIDE=false
-FOLDER=/app/data/workspaces
+FOLDER="/app/data/workspaces"
+PS1=">"
 EOF
 fi
 
 source $ENV
 
-export XDG_DATA_HOME=/app/data/.local/share
-export XDG_STATE_HOME=/app/data/.local/state
-export XDG_CACHE_HOME=/run/.cache
+export XDG_CONFIG_HOME="/app/data/.local/share"
+export XDG_DATA_HOME="/app/data/.local/share"
+export XDG_STATE_HOME="/app/data/.local/state"
 
-export DOCKER_HOST=$CLOUDRON_DOCKER_HOST
+DIRS="$HOME $FOLDER $XDG_CONFIG_HOME $XDG_DATA_HOME $XDG_STATE_HOME"
 
-if [ -n "$FOLDER" ]; then
-     mkdir -p $FOLDER
+mkdir -p $DIRS
+
+if [[ ! -L ${XDG_CONFIG_HOME}/code-server/config.yaml  ]]; then
+     mkdir -p ${XDG_CONFIG_HOME}/code-server
+     ln -s /app/pkg/codeserver-config.yaml \
+         ${XDG_CONFIG_HOME}/code-server/config.yaml
 fi
 
 echo "==> Ensure permissions"
-chown -R $OWN /run/.cache /app/data
+chown -R $OWN $DIRS
 
 if [[ ! -f /app/data/.initialized  ]]; then
      echo "Fresh installation, init"
-     $GSU code-server --install-extension ms-azuretools.vscode-docker
+     $GSU code-server --install-extension vscode.git-base ## init no-op
      touch /app/data/.initialized
 fi
 
-if [[ -d /app/data/.vscode/logs  ]]; then
-      $GSU mv /app/data/.vscode/logs /run
-      $GSU ln -s /run/logs /app/data/.vscode/logs
+LOGS="$XDG_DATA_HOME/code-server/logs"
+CODER_LOGS="$XDG_DATA_HOME/code-server/coder-logs"
+
+if [[ -d $LOGS ]]; then
+      mv $LOGS /run/
+      ln -s /run/logs $LOGS
+fi
+
+if [[ -d $CODER_LOGS ]]; then
+      mv $CODER_LOGS /run/
+      ln -s /run/coder-logs $CODER_LOGS
 fi
 
 echo "==> Starting code-server"

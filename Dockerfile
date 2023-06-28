@@ -4,16 +4,13 @@ ARG VERSION=4.14.0
 ARG DEB=code-server_${VERSION}_amd64.deb
 ARG URL=https://github.com/coder/code-server/releases/download/v${VERSION}/${DEB}
 ARG USER=cloudron
-ARG HOME=/home/${USER}
+ARG HOME=/run/home
 
-RUN apt update && apt install -y docker.io
-RUN curl -L -O ${URL} && apt install ./${DEB} && rm ${DEB}
-
-COPY config.yaml ${HOME}/.config/code-server/config.yaml
+COPY config.yaml /app/pkg/codeserver-config.yaml
 COPY start.sh /app/pkg/start.sh
 
-RUN ln -s /run/.cache/ ${HOME}/.cache \
-    && ln -s /app/data/ ${HOME}/data \
-    && chown -R ${USER}:${USER} ${HOME}
+RUN usermod -d ${HOME} ${USER}
+RUN apt update && apt install -y tmux
+RUN curl -L -O ${URL} && apt install ./${DEB} && rm ${DEB}
 
 CMD [ "/app/pkg/start.sh" ]
